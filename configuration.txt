@@ -1,0 +1,178 @@
+*****************************************************************************************
+AccessSwitch0: vlans erstellen und mit Namen versehen
+*****************************************************************************************
+Switch>enable
+Switch#configure terminal 
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#vlan 2
+Switch(config-vlan)#name IT
+Switch(config-vlan)#exit
+Switch(config)#vlan 5
+Switch(config-vlan)#name HR
+Switch(config-vlan)#exit
+Switch(config)#do show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/2, Fa0/3, Fa0/4
+                                                Fa0/5, Fa0/6, Fa0/7, Fa0/8
+                                                Fa0/9, Fa0/10, Fa0/11, Fa0/12
+                                                Fa0/13, Fa0/14, Fa0/15, Fa0/16
+                                                Fa0/17, Fa0/18, Fa0/19, Fa0/20
+                                                Fa0/21, Fa0/22, Fa0/23, Fa0/24
+2    IT                               active    
+5    HR                               active    
+1002 fddi-default                     act/unsup 
+1003 token-ring-default               act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trnet-default                    act/unsup 
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+2    enet  100002     1500  -      -      -        -    -        0      0
+5    enet  100005     1500  -      -      -        -    -        0      0
+1002 fddi  101002     1500  -      -      -        -    -        0      0   
+
+
+
+*****************************************************************************************
+AccessSwitch0: vlans auf den port aktivieren
+*****************************************************************************************
+Switch(config)#interface fastEthernet 0/1
+Switch(config-if)#switchport mode access
+Switch(config-if)#switchport access vlan 2
+Switch(config-if)#exit
+Switch(config)#interface fastEthernet 0/2
+Switch(config-if)#switchport mode access
+Switch(config-if)#switchport access vlan 5
+Switch(config-if)#do show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/3, Fa0/4, Fa0/5, Fa0/6
+                                                Fa0/7, Fa0/8, Fa0/9, Fa0/10
+                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/18
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22
+                                                Fa0/23, Fa0/24
+2    IT                               active    Fa0/1
+5    HR                               active    Fa0/2
+1002 fddi-default                     act/unsup 
+1003 token-ring-default               act/unsup 
+1004 fddinet-default                  act/unsup 
+1005 trnet-default                    act/unsup 
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+2    enet  100002     1500  -      -      -        -    -        0      0
+5    enet  100005     1500  -      -      -        -    -        0      0
+1002 fddi  101002     1500  -      -      -        -    -        0      0  
+
+
+*****************************************************************************************
+AccessSwitch1-3: gleicher Vorgang wie für AccessSwitch0
+*****************************************************************************************
+
+
+*****************************************************************************************
+AccessSwitch0: trunks einrichten
+*****************************************************************************************
+Switch>enable
+Switch#configure terminal
+Switch(config)#interface fastEthernet 0/3
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#exit
+Switch(config)#interface fastEthernet 0/4
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#show interface trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/3       on           802.1q         trunking      1
+Fa0/4       on           802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Fa0/3       2,5
+Fa0/4       2,5
+
+Port        Vlans allowed and active in management domain
+Fa0/3       2,5
+Fa0/4       2,5
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/3       2,5
+Fa0/4       none
+
+
+*****************************************************************************************
+AccessSwitch1-3: gleicher Vorgang wie für AccessSwitch0
+*****************************************************************************************
+
+
+*****************************************************************************************
+DistributionSwitch0: vlans und trunks einrichten
+*****************************************************************************************
+
+Switch>enable
+Switch#configure terminal
+Switch(config)#vlan 2
+Switch(config-vlan)#name IT
+Switch(config-vlan)#exit
+Switch(config)#vlan 5
+Switch(config-vlan)#name HR
+Switch(config-vlan)#exit
+Switch(config)#interface fastethernet 0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#exit
+Switch(config)#interface fastethernet 0/2
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#exit
+Switch(config)#interface fastethernet 0/3
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#exit
+Switch(config)#interface fastethernet 0/4
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#exit
+Switch(config)#interface fastethernet 0/5
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 2,5
+Switch(config-if)#do show interface trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      1
+Fa0/2       on           802.1q         trunking      1
+Fa0/3       on           802.1q         trunking      1
+Fa0/4       on           802.1q         trunking      1
+Fa0/5       on           802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Fa0/1       2,5
+Fa0/2       2,5
+Fa0/3       2,5
+Fa0/4       2,5
+Fa0/5       2,5
+
+Port        Vlans allowed and active in management domain
+Fa0/1       none
+Fa0/2       none
+Fa0/3       none
+Fa0/4       none
+Fa0/5       none
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       none
+Fa0/2       none
+Fa0/3       none
+Fa0/4       none
+
+
+*****************************************************************************************
+DistributionSwitch1: gleicher Vorgang wie auf DistributionSwitch0
+*****************************************************************************************
