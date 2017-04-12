@@ -182,3 +182,68 @@ Configure gateway for access layer clients:
 left clients use 172.20.0.254 and 172.17.0.254 as gateway
 right clients use 172.20.0.253 and 172.17.0.253 as gateway
 *****************************************************************************************
+
+
+*****************************************************************************************
+Configure trunk on DistributionSwitch0 to Core Layer
+*****************************************************************************************
+Switch#configure terminal
+Switch(config)#interface fastEthernet 0/6
+Switch(config-if)#switchport mode trunk 
+Switch(config-if)#switchport trunk allowed vlan all
+Switch(config-if)#exit
+
+
+*****************************************************************************************
+DistributionSwitch2: gleicher Vorgang wie auf Distribution Switch0
+*****************************************************************************************
+
+
+*****************************************************************************************
+Configure Router0 for vlan routing
+*****************************************************************************************
+Router>enable
+Router#configure terminal
+Router(config)#interface fastethernet 0/0.1						//create sub interface
+Router(config-subif)#encapsulation dot1q 2						//for subnet 2
+Router(config-subif)#ip address 172.17.0.254 255.255.0.0
+Router(config-subif)#no shutdown
+Router(config-subif)#exit
+Router(config)#interface fastethernet 0/0.2
+Router(config-subif)#encapsulation dot1q 5
+Router(config-subif)#ip address 172.20.0.254 255.255.0.0
+Router(config-subif)#no shutdown
+Router(config-subif)#exit
+Router(config)#interface fastEthernet 0/0						//turn on the interface
+Router(config-if)#no shutdown
+Router>show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        unassigned      YES unset  up                    up
+FastEthernet0/0.1      172.17.0.254    YES manual up                    up
+FastEthernet0/0.2      172.20.0.254    YES manual up                    up
+FastEthernet0/1        unassigned      YES unset  administratively down downn
+
+
+*****************************************************************************************
+Configure Router1 for vlan routing
+*****************************************************************************************
+Router>enable
+Router#configure terminal
+Router(config)#interface fastethernet 0/0.1
+Router(config-subif)#encapsulation dot1Q 2
+Router(config-subif)#ip address 172.17.0.253 255.255.0.0
+Router(config-subif)#no shutdown
+Router(config)#interface fasteth
+Router(config)#interface fastethernet 0/0.2
+Router(config-subif)#encapsulation dot1Q 5
+Router(config-subif)#ip address 172.20.0.253 255.255.0.0
+Router(config-subif)#no shutdown
+Router(config-subif)#exit
+Router(config)#interface fastethernet 0/0
+Router(config-if)#no shutdown
+Router#show ip interface brief 
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        unassigned      YES unset  up                    up
+FastEthernet0/0.1      172.17.0.253    YES manual up                    up
+FastEthernet0/0.2      172.20.0.253    YES manual up                    up
+FastEthernet0/1        unassigned      YES unset  administratively down down
