@@ -247,3 +247,73 @@ FastEthernet0/0        unassigned      YES unset  up                    up
 FastEthernet0/0.1      172.17.0.253    YES manual up                    up
 FastEthernet0/0.2      172.20.0.253    YES manual up                    up
 FastEthernet0/1        unassigned      YES unset  administratively down down
+
+
+*****************************************************************************************
+Configure the core layer
+*****************************************************************************************
+
+*****************************************************************************************
+Insert serial modules(NM-4A/S) on Routers 5,6,7 and connect with serial DCE cable
+*****************************************************************************************
+
+*****************************************************************************************
+Set the clock rate on the DCE site of the serial connecton between the core routers
+*****************************************************************************************
+Router5 is connect with Router6 via Serial 1/1 and is the DCE site:
+Router#show controllers serial 1/1
+Interface Serial1/1
+Hardware is PowerQUICC MPC860
+DCE V.35, clock rate 128000
+Router#config terminal
+Router(config)#interface serial 1/1
+Router(config-if)#clock rate 148000
+Router(config-if)#no shutdown
+
+Router5 is connect with Router7 via Serial 1/0 and is the DCE site:
+Router#show controllers serial 1/0
+Interface Serial1/0
+Hardware is PowerQUICC MPC860
+DCE V.35, clock rate 148000
+Router#configure terminal
+Router(config)#interface serial 1/0
+Router(config-if)#clock rate 148000
+Router(config-if)#no shutdown
+
+Router6 is connect with Router5 via Serial 1/1 and is the DTE site:
+Router>show controllers serial 1/1
+Interface Serial1/1
+Hardware is PowerQUICC MPC860
+DTE V.35 TX and RX clocks detected
+Router#configure terminal
+Router(config)#interface serial 1/1
+Router(config-if)#no shutdown
+
+Router6 is connect with Router7 via Serial 1/0 and is the DCE site:
+Router>show controllers serial 1/0
+Interface Serial1/0
+Hardware is PowerQUICC MPC860
+DCE V.35, clock rate 148000
+Router>enable
+Router#configure terminal
+Router(config)#interface serial 1/0
+Router(config-if)#clock rate 148000
+Router(config-if)#no shutdown
+
+Router7 is connect with Router5 via Serial 1/0 and is the DTE site:
+Router#show controllers serial1/0
+Interface Serial1/0
+Hardware is PowerQUICC MPC860
+DTE V.35 TX and RX clocks detected
+Router#configure terminal
+Router(config)#interface serial 1/0
+Router(config-if)#no shutdown
+
+Router7 is connect with Router6 via Serial 1/1 and is the DTE site:
+Router#show controllers serial1/1
+Interface Serial1/1
+Hardware is PowerQUICC MPC860
+DTE V.35 TX and RX clocks detected
+Router#configure terminal
+Router(config)#interface serial 1/1
+Router(config-if)#no shutdown
