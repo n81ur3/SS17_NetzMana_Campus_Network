@@ -1,5 +1,5 @@
 *****************************************************************************************
-AccessSwitch0: vlans erstellen und mit Namen versehen
+AccessSwitch0: create vlans and asign names
 *****************************************************************************************
 Switch>enable
 Switch#configure terminal 
@@ -37,7 +37,7 @@ VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
 
 
 *****************************************************************************************
-AccessSwitch0: vlans auf den port aktivieren
+AccessSwitch0: activate vlan on ports 
 *****************************************************************************************
 Switch(config)#interface fastEthernet 0/1
 Switch(config-if)#switchport mode access
@@ -72,12 +72,12 @@ VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
 
 
 *****************************************************************************************
-AccessSwitch1-3: gleicher Vorgang wie für AccessSwitch0
+AccessSwitch1-3: same procedure as on Switch0
 *****************************************************************************************
 
 
 *****************************************************************************************
-AccessSwitch0: trunks einrichten
+AccessSwitch0: create trunks 
 *****************************************************************************************
 Switch>enable
 Switch#configure terminal
@@ -109,12 +109,12 @@ Fa0/4       none
 
 
 *****************************************************************************************
-AccessSwitch1-3: gleicher Vorgang wie für AccessSwitch0
+AccessSwitch1-3: same procedure as on Switch0
 *****************************************************************************************
 
 
 *****************************************************************************************
-DistributionSwitch0: vlans und trunks einrichten
+DistributionSwitch0: create vlans and trunks
 *****************************************************************************************
 
 Switch>enable
@@ -174,7 +174,7 @@ Fa0/4       none
 
 
 *****************************************************************************************
-DistributionSwitch1: gleicher Vorgang wie auf DistributionSwitch0
+DistributionSwitch1: same procedure as on DistributionSwitch0
 *****************************************************************************************
 
 *****************************************************************************************
@@ -195,7 +195,7 @@ Switch(config-if)#exit
 
 
 *****************************************************************************************
-DistributionSwitch2: gleicher Vorgang wie auf Distribution Switch0
+DistributionSwitch2: same procedure as on Distribution Switch0
 *****************************************************************************************
 
 
@@ -204,8 +204,8 @@ Configure Router0 for vlan routing
 *****************************************************************************************
 Router>enable
 Router#configure terminal
-Router(config)#interface fastethernet 0/0.1						//create sub interface
-Router(config-subif)#encapsulation dot1q 2						//for subnet 2
+Router(config)#interface fastethernet 0/0.1			//create sub interface
+Router(config-subif)#encapsulation dot1q 2			//for subnet 2
 Router(config-subif)#ip address 172.17.0.254 255.255.0.0
 Router(config-subif)#no shutdown
 Router(config-subif)#exit
@@ -214,7 +214,7 @@ Router(config-subif)#encapsulation dot1q 5
 Router(config-subif)#ip address 172.20.0.254 255.255.0.0
 Router(config-subif)#no shutdown
 Router(config-subif)#exit
-Router(config)#interface fastEthernet 0/0						//turn on the interface
+Router(config)#interface fastEthernet 0/0			//turn on the interface
 Router(config-if)#no shutdown
 Router>show ip interface brief
 Interface              IP-Address      OK? Method Status                Protocol
@@ -426,3 +426,106 @@ FastEthernet0/0        unassigned      YES unset  up                    up
 FastEthernet0/0.1      172.17.0.253    YES manual up                    up
 FastEthernet0/0.2      172.20.0.253    YES manual up                    up
 FastEthernet0/1        192.168.4.2     YES manual up                    up
+
+
+*****************************************************************************************
+Enable RIP-routing in core layer and distribution layer
+*****************************************************************************************
+Router 5:
+Router>enable
+Router#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#router rip 
+Router(config-router)#network 172.35.0.0
+Router(config-router)#network 192.168.5.0
+Router(config-router)#network 192.168.1.0
+Router(config-router)#network 192.168.3.0
+Router(config-router)#exit
+Router(config)#do show ip route
+C    172.35.0.0/16 is directly connected, FastEthernet0/1
+C    192.168.1.0/24 is directly connected, Serial1/1
+C    192.168.3.0/24 is directly connected, Serial1/0
+C    192.168.5.0/24 is directly connected, FastEthernet0/0
+
+Router 6:
+Router>enable
+Router#configure terminal
+Router(config)#router rip
+Router(config-router)#network 192.168.1.0
+Router(config-router)#network 192.168.4.0
+Router(config-router)#network 172.31.0.0
+Router(config-router)#network 192.168.2.0
+Router(config-router)#exit
+Router(config)#do show ip route
+C    172.31.0.0/16 is directly connected, FastEthernet0/1
+R    172.35.0.0/16 [120/1] via 192.168.1.1, 00:00:24, Serial1/1
+C    192.168.1.0/24 is directly connected, Serial1/1
+C    192.168.2.0/24 is directly connected, Serial1/0
+R    192.168.3.0/24 [120/1] via 192.168.1.1, 00:00:24, Serial1/1
+C    192.168.4.0/24 is directly connected, FastEthernet0/0
+R    192.168.5.0/24 [120/1] via 192.168.1.1, 00:00:24, Serial1/1
+
+Router 7:
+Router>enable
+Router#configure terminal
+Router(config)#router rip
+Router(config-router)#network 192.168.3.0
+Router(config-router)#network 192.168.2.0
+Router(config-router)#network 10.0.0.0
+Router(config-router)#exit
+Router(config)#do show ip route
+C    10.0.0.0/8 is directly connected, FastEthernet0/0
+R    172.31.0.0/16 [120/1] via 192.168.2.1, 00:00:15, Serial1/1
+R    172.35.0.0/16 [120/1] via 192.168.3.1, 00:00:23, Serial1/0
+R    192.168.1.0/24 [120/1] via 192.168.3.1, 00:00:23, Serial1/0
+                    [120/1] via 192.168.2.1, 00:00:15, Serial1/1
+C    192.168.2.0/24 is directly connected, Serial1/1
+C    192.168.3.0/24 is directly connected, Serial1/0
+R    192.168.4.0/24 [120/1] via 192.168.2.1, 00:00:15, Serial1/1
+R    192.168.5.0/24 [120/1] via 192.168.3.1, 00:00:23, Serial1/0
+
+Router 0:
+Router>enable
+Router#configure terminal
+Router(config)#router rip
+Router(config-router)#network 192.168.5.0
+Router(config-router)#network 172.20.0.0
+Router(config-router)#network 172.17.0.0
+Router(config-router)#exit
+Router(config)#do show ip route
+R    10.0.0.0/8 [120/2] via 192.168.5.1, 00:00:21, FastEthernet0/1
+C    172.17.0.0/16 is directly connected, FastEthernet0/0.1
+C    172.20.0.0/16 is directly connected, FastEthernet0/0.2
+R    172.31.0.0/16 [120/2] via 192.168.5.1, 00:00:21, FastEthernet0/1
+R    172.35.0.0/16 [120/1] via 192.168.5.1, 00:00:21, FastEthernet0/1
+R    192.168.1.0/24 [120/1] via 192.168.5.1, 00:00:21, FastEthernet0/1
+R    192.168.2.0/24 [120/2] via 192.168.5.1, 00:00:21, FastEthernet0/1
+R    192.168.3.0/24 [120/1] via 192.168.5.1, 00:00:21, FastEthernet0/1
+R    192.168.4.0/24 [120/2] via 192.168.5.1, 00:00:21, FastEthernet0/1
+C    192.168.5.0/24 is directly connected, FastEthernet0/1
+
+Router 1:
+Router>enable
+Router#configure terminal
+Router(config)#router rip
+Router(config-router)#network 192.168.4.0
+Router(config-router)#network 172.20.0.0
+Router(config-router)#network 172.17.0.0
+Router(config-router)#exit
+Router(config)#do show ip route
+R    10.0.0.0/8 [120/2] via 192.168.4.1, 00:00:06, FastEthernet0/1
+C    172.17.0.0/16 is directly connected, FastEthernet0/0.1
+C    172.20.0.0/16 is directly connected, FastEthernet0/0.2
+R    172.31.0.0/16 [120/1] via 192.168.4.1, 00:00:06, FastEthernet0/1
+R    172.35.0.0/16 [120/2] via 192.168.4.1, 00:00:06, FastEthernet0/1
+                   [120/2] via 172.20.0.254, 00:00:09, FastEthernet0/0.2
+R    192.168.1.0/24 [120/1] via 192.168.4.1, 00:00:06, FastEthernet0/1
+R    192.168.2.0/24 [120/1] via 192.168.4.1, 00:00:06, FastEthernet0/1
+R    192.168.3.0/24 [120/2] via 192.168.4.1, 00:00:06, FastEthernet0/1
+                    [120/2] via 172.20.0.254, 00:00:09, FastEthernet0/0.2
+C    192.168.4.0/24 is directly connected, FastEthernet0/1
+R    192.168.5.0/24 [120/1] via 172.20.0.254, 00:00:09, FastEthernet0/0.2
+
+
+*****************************************************************************************
+*****************************************************************************************
