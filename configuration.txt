@@ -317,3 +317,112 @@ DTE V.35 TX and RX clocks detected
 Router#configure terminal
 Router(config)#interface serial 1/1
 Router(config-if)#no shutdown
+
+*****************************************************************************************
+Configure IP-address for clients and server in core layer
+*****************************************************************************************
+
+
+*****************************************************************************************
+Set IP addresses on routers in core layer
+*****************************************************************************************
+Router 5:
+Router>enable
+Router#configure terminal
+Router(config)#interface fastether 1/0
+Router(config-if)#ip address 172.35.0.1 255.255.0.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface fastethernet 0/0
+Router(config-if)#ip address 192.168.5.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface serial 1/0
+Router(config-if)#ip address 192.168.3.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface serial 1/1
+Router(config-if)#ip address 192.168.1.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#do show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        192.168.5.1     YES manual up                    down
+FastEthernet0/1        172.35.0.1      YES manual up                    up
+Serial1/0              192.168.3.1     YES manual up                    up
+Serial1/1              192.168.1.1     YES manual up                    up
+
+Router 6:
+Router>enable
+Router#configure terminal
+Router(config)#interface fastethernet 0/1
+Router(config-if)#ip address 172.31.0.1 255.255.0.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface fastethernet 0/0
+Router(config-if)#ip address 192.168.4.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface serial 1/1
+Router(config-if)#ip address 192.168.1.2 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface serial 1/0
+Router(config-if)#ip address 192.168.2.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#do show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        192.168.4.1     YES manual up                    down
+FastEthernet0/1        172.31.0.1      YES manual up                    up
+Serial1/0              192.168.2.1     YES manual up                    up
+Serial1/1              192.168.1.2     YES manual up                    up
+
+Router 7:
+Router>enable
+Router#configure terminal
+Router(config)#interface fastethernet 0/0
+Router(config-if)#ip address 10.0.0.1 255.0.0.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface serial 1/0
+Router(config-if)#ip address 192.168.3.2 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#interface serial 1/1
+Router(config-if)#ip address 192.168.2.2 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#do show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        10.0.0.1        YES manual up                    up
+Serial1/0              192.168.3.2     YES manual up                    up
+Serial1/1              192.168.2.2     YES manual up                    up
+
+Router 0:
+Router>enable
+Router#configure terminal
+Router(config)#interface fastethernet 0/1
+Router(config-if)#ip address 192.168.5.2 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#do show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        unassigned      YES unset  up                    up
+FastEthernet0/0.1      172.17.0.254    YES manual up                    up
+FastEthernet0/0.2      172.20.0.254    YES manual up                    up
+FastEthernet0/1        192.168.5.2     YES manual up                    up
+
+Router 1:
+Router>enable
+Router#configure terminal
+Router(config)#interface fastethernet 0/1
+Router(config-if)#ip address 192.168.4.2 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#do show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        unassigned      YES unset  up                    up
+FastEthernet0/0.1      172.17.0.253    YES manual up                    up
+FastEthernet0/0.2      172.20.0.253    YES manual up                    up
+FastEthernet0/1        192.168.4.2     YES manual up                    up
